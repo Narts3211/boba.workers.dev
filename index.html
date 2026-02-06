@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Her Şeyi Bilen Okuyucunun Bakış Açısı</title>
+    <style>
+        :root { --bg: #0b0e14; --card: #1a1e26; --accent: #3498db; --text: #d1d1d1; }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { background-color: var(--bg); color: #fff; font-family: 'Segoe UI', sans-serif; overflow-x: hidden; }
+        
+        .menu-btn { position: fixed; top: 15px; left: 15px; font-size: 24px; background: var(--card); color: var(--accent); border: 1px solid #333; padding: 8px 12px; border-radius: 8px; cursor: pointer; z-index: 2000; }
+        .sidebar { position: fixed; top: 0; left: -280px; width: 260px; height: 100%; background: var(--card); z-index: 2001; transition: 0.4s ease; padding: 60px 20px; box-shadow: 5px 0 15px rgba(0,0,0,0.5); }
+        .sidebar.active { left: 0; }
+        .menu-item { padding: 15px 0; color: #fff; cursor: pointer; border-bottom: 1px solid #222; font-size: 0.95rem; }
+        .menu-item:hover { color: var(--accent); }
+        .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); display: none; z-index: 1500; }
+        .overlay.active { display: block; }
+
+        .hero {
+            position: relative;
+            width: 100%;
+            height: 85vh;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .hero__media {
+            position: absolute;
+            inset: 0;
+            z-index: 1;
+        }
+
+        .hero__media img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center;
+            filter: brightness(0.6);
+            display: block;
+        }
+
+        .hero__content {
+            position: relative;
+            z-index: 2;
+            text-align: center;
+            padding: 20px;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            background: linear-gradient(to bottom, transparent 40%, var(--bg) 100%);
+        }
+
+        h1 { color: var(--accent); font-size: clamp(1.2rem, 5vw, 1.8rem); margin-bottom: 5px; letter-spacing: 1px; text-shadow: 0 2px 10px rgba(0,0,0,0.8); }
+        #ai-log { font-size: 0.8rem; color: #2ecc71; margin-bottom: 15px; font-family: monospace; }
+        
+        /* ARAMA KUTUSU STİLİ */
+        .search-wrapper {
+            max-width: 280px;
+            margin: 0 auto;
+        }
+        #search-box {
+            width: 100%;
+            padding: 10px 15px;
+            background: rgba(26, 30, 38, 0.7);
+            border: 1px solid #333;
+            border-radius: 20px;
+            color: #fff;
+            outline: none;
+            font-size: 0.85rem;
+            text-align: center;
+            transition: 0.3s;
+        }
+        #search-box:focus { border-color: var(--accent); box-shadow: 0 0 10px rgba(52, 152, 219, 0.3); }
+
+        .container { 
+            max-width: 1000px; 
+            margin: -120px auto 50px; 
+            text-align: center; 
+            padding: 0 15px; 
+            position: relative; 
+            z-index: 10; 
+        }
+
+        .chapter-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 15px; }
+        .chapter-card { background: var(--card); padding: 20px; border-radius: 12px; text-decoration: none; color: var(--text); border: 1px solid #222; transition: 0.3s; text-align: left; display: block; box-shadow: 0 4px 15px rgba(0,0,0,0.5); }
+        .chapter-card:hover { border-color: var(--accent); transform: translateY(-3px); box-shadow: 0 8px 20px rgba(0,0,0,0.6); }
+        .chapter-card span { font-size: 0.7rem; color: var(--accent); font-weight: bold; }
+        .chapter-card strong { display: block; margin-top: 5px; font-size: 1.05rem; }
+    </style>
+</head>
+
+<body>
+    <section class="hero">
+        <div class="hero__media">
+            <img src="tumblr.jpg" alt="Kapak Görseli" onerror="this.src='https://images6.alphacoders.com/131/1318055.png'">
+        </div>
+
+        <div class="hero__content">
+            <h1>HER ŞEYİ BİLEN OKUYUCUNUN BAKIŞ AÇISI</h1>
+            <div id="ai-log">Yükleniyor...</div>
+            
+            <div class="search-wrapper">
+                <input type="text" id="search-box" placeholder="Bölüm Ara..." onkeyup="filterChapters()">
+            </div>
+        </div>
+    </section>
+
+    <div class="container">
+        <div id="chapter-list" class="chapter-grid"></div>
+    </div>
+
+    <button class="menu-btn" onclick="toggleMenu()">☰</button>
+    <div id="overlay" class="overlay" onclick="toggleMenu()"></div>
+    <div id="sidebar" class="sidebar">
+        <h3 style="color:var(--accent); margin-bottom:20px; font-size: 1.2rem;">MENÜ</h3>
+        <div class="menu-item" onclick="bakim()">👤 Profil</div>
+        <div class="menu-item" onclick="bakim()">⭐ Favoriler</div>
+        <div class="menu-item" onclick="bakim()">⚙️ Ayarlar</div>
+        <div class="menu-item" onclick="bakim()">💬 Topluluk</div>
+    </div>
+
+    <script>
+        function toggleMenu() {
+            document.getElementById('sidebar').classList.toggle('active');
+            document.getElementById('overlay').classList.toggle('active');
+        }
+        function bakim() { alert("Bu özellik şu an bakımda!"); }
+
+        let allChapters = []; // Filtreleme için veriyi burada saklayacağız
+
+        async function init() {
+            const log = document.getElementById('ai-log');
+            try {
+                const res = await fetch('bolumler.json?v=' + Date.now());
+                if(!res.ok) throw "Hata";
+                const names = await res.json();
+                const keys = Object.keys(names).map(Number).sort((a,b) => a-b);
+                
+                // Veriyi hazırla
+                allChapters = keys.map(num => ({ id: num, title: names[num] }));
+                
+                // İlk listelemeyi yap
+                renderChapters(allChapters);
+                
+                log.innerText = `[Sistem]: ${keys.length} bölüm başarıyla yüklendi.`;
+            } catch (err) {
+                log.innerText = "[Hata]: Bağlantı kurulamadı.";
+            }
+        }
+
+        function renderChapters(chapters) {
+            const list = document.getElementById('chapter-list');
+            list.innerHTML = chapters.map(ch => `
+                <a href="oku.html?b=${ch.id}" class="chapter-card">
+                    <span>BÖLÜM ${ch.id}</span>
+                    <strong>${ch.title}</strong>
+                </a>
+            `).join('');
+        }
+
+        function filterChapters() {
+            const val = document.getElementById('search-box').value.toLowerCase();
+            const filtered = allChapters.filter(ch => 
+                ch.id.toString().includes(val) || ch.title.toLowerCase().includes(val)
+            );
+            renderChapters(filtered);
+        }
+
+        init();
+    </script>
+</body>
+</html>

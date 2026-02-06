@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bölüm Okunuyor</title>
+    <style>
+        :root { --bg: #0b0e14; --reader-bg: #0f121a; --text: #d1d1d1; --accent: #3498db; }
+        body { background-color: var(--bg); color: var(--text); font-family: 'Georgia', serif; line-height: 1.8; margin: 0; }
+        .container { max-width: 800px; margin: auto; padding: 20px; }
+        #title { color: var(--accent); text-align: center; font-size: 1.5rem; margin-bottom: 20px; border-bottom: 1px solid #333; padding-bottom: 10px; }
+        #content { white-space: pre-wrap; font-size: 1.2rem; background: var(--reader-bg); padding: 25px; border-radius: 12px; }
+        .nav { display: flex; justify-content: space-between; margin: 20px 0; }
+        .btn { color: var(--accent); text-decoration: none; border: 1px solid var(--accent); padding: 10px 20px; border-radius: 5px; }
+        .hidden { display: none; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="nav">
+            <a href="index.html" class="btn">🏠 Ana Sayfa</a>
+            <div id="counter-area"></div>
+        </div>
+        
+        <h2 id="title">Yükleniyor...</h2>
+        <div id="content">İçerik çekiliyor...</div>
+
+        <div class="nav">
+            <a id="prev" class="btn hidden">⬅ Önceki</a>
+            <a id="next" class="btn hidden">Sonraki ➡</a>
+        </div>
+    </div>
+
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const b = parseInt(urlParams.get('b')) || 1;
+
+        async function load() {
+            try {
+                const nRes = await fetch('bolumler.json?v=' + Date.now());
+                const names = await nRes.json();
+                
+                document.getElementById('title').innerText = names[b] || "Bölüm " + b;
+                
+                const cRes = await fetch(`bolumler/${b}.txt?v=` + Date.now());
+                if(!cRes.ok) throw "Metin bulunamadı.";
+                document.getElementById('content').innerText = await cRes.text();
+
+                // Butonlar
+                const keys = Object.keys(names).map(Number).sort((a,b) => a-b);
+                const i = keys.indexOf(b);
+                if(i > 0) {
+                    const p = document.getElementById('prev');
+                    p.href = `oku.html?b=${keys[i-1]}`;
+                    p.classList.remove('hidden');
+                }
+                if(i < keys.length - 1) {
+                    const n = document.getElementById('next');
+                    n.href = `oku.html?b=${keys[i+1]}`;
+                    n.classList.remove('hidden');
+                }
+            } catch (e) {
+                document.getElementById('content').innerText = "Bölüm henüz yüklenmemiş.";
+            }
+        }
+        load();
+    </script>
+</body>
+</html>
