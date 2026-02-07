@@ -5,108 +5,125 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Her Şeyi Bilen Okuyucunun Bakış Açısı</title>
     <style>
-        :root { --bg: #0b0e14; --card: #1a1e26; --accent: #3498db; --text: #d1d1d1; }
+        :root { --bg: #0b0e14; --card: rgba(21, 25, 33, 0.85); --accent: #3498db; --text: #d1d1d1; --success: #2ecc71; --danger: #e74c3c; }
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { background-color: var(--bg); color: #fff; font-family: 'Segoe UI', sans-serif; overflow-x: hidden; }
         
-        .menu-btn { position: fixed; top: 15px; left: 15px; font-size: 24px; background: var(--card); color: var(--accent); border: 1px solid #333; padding: 8px 12px; border-radius: 8px; cursor: pointer; z-index: 2000; }
-        .sidebar { position: fixed; top: 0; left: -280px; width: 260px; height: 100%; background: var(--card); z-index: 2001; transition: 0.4s ease; padding: 60px 20px; box-shadow: 5px 0 15px rgba(0,0,0,0.5); }
-        .sidebar.active { left: 0; }
-        .menu-item { padding: 15px 0; color: #fff; cursor: pointer; border-bottom: 1px solid #222; font-size: 0.95rem; }
-        .menu-item:hover { color: var(--accent); }
-        .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); display: none; z-index: 1500; }
-        .overlay.active { display: block; }
-
-        .hero {
-            position: relative;
-            width: 100%;
-            height: 85vh;
-            overflow: hidden;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+        body { 
+            background-color: var(--bg); 
+            color: #fff; 
+            font-family: 'Segoe UI', sans-serif; 
+            min-height: 100vh;
         }
 
-        .hero__media {
-            position: absolute;
-            inset: 0;
-            z-index: 1;
-        }
-
-        .hero__media img {
+        /* FULLSCREEN BACKGROUND */
+        .main-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
             width: 100%;
             height: 100%;
-            object-fit: cover;
-            object-position: center;
-            filter: brightness(0.6);
-            display: block;
+            z-index: -1;
+            background: linear-gradient(to bottom, rgba(11, 14, 20, 0.3), rgba(11, 14, 20, 1)), url('tumblr.jpg');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
         }
 
-        .hero__content {
-            position: relative;
-            z-index: 2;
-            text-align: center;
-            padding: 20px;
-            width: 100%;
-            height: 100%;
-            display: flex;
+        /* CONTENT LAYOUT */
+        .hero { 
+            height: 85vh; 
+            display: flex; 
             flex-direction: column;
-            justify-content: center;
-            background: linear-gradient(to bottom, transparent 40%, var(--bg) 100%);
+            align-items: center; 
+            justify-content: center; 
+            text-align: center; 
+            padding: 20px;
         }
 
-        h1 { color: var(--accent); font-size: clamp(1.2rem, 5vw, 1.8rem); margin-bottom: 5px; letter-spacing: 1px; text-shadow: 0 2px 10px rgba(0,0,0,0.8); }
-        #ai-log { font-size: 0.8rem; color: #2ecc71; margin-bottom: 15px; font-family: monospace; }
-        
-        /* ARAMA KUTUSU STİLİ */
-        .search-wrapper {
-            max-width: 280px;
-            margin: 0 auto;
+        h1 { 
+            color: var(--accent); 
+            font-size: 2.5rem; 
+            text-shadow: 0 0 20px rgba(52, 152, 219, 0.5), 0 5px 15px #000; 
+            margin-bottom: 10px; 
+            font-weight: 900;
         }
-        #search-box {
-            width: 100%;
-            padding: 10px 15px;
-            background: rgba(26, 30, 38, 0.7);
-            border: 1px solid #333;
-            border-radius: 20px;
-            color: #fff;
-            outline: none;
-            font-size: 0.85rem;
-            text-align: center;
+
+        #ai-log { font-size: 0.9rem; color: var(--success); margin-bottom: 30px; font-family: 'Courier New', monospace; }
+
+        #search-box { 
+            width: 100%; 
+            max-width: 400px; 
+            padding: 15px 25px; 
+            background: rgba(0, 0, 0, 0.6); 
+            border: 1px solid rgba(52, 152, 219, 0.3); 
+            border-radius: 30px; 
+            color: #fff; 
+            text-align: center; 
+            outline: none; 
+            backdrop-filter: blur(10px);
             transition: 0.3s;
         }
-        #search-box:focus { border-color: var(--accent); box-shadow: 0 0 10px rgba(52, 152, 219, 0.3); }
 
-        .container { 
-            max-width: 1000px; 
-            margin: -120px auto 50px; 
-            text-align: center; 
-            padding: 0 15px; 
+        /* CHAPTER GRID */
+        .container { max-width: 1200px; margin: -50px auto 100px; padding: 0 20px; }
+        .chapter-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 25px; }
+        
+        .chapter-card { 
+            background: var(--card); 
+            padding: 30px; 
+            border-radius: 20px; 
+            border: 1px solid rgba(255,255,255,0.05); 
+            cursor: pointer; 
             position: relative; 
-            z-index: 10; 
+            transition: 0.4s; 
+            backdrop-filter: blur(15px);
+        }
+        .chapter-card:hover { 
+            border-color: var(--accent); 
+            transform: translateY(-8px); 
+            background: rgba(21, 25, 33, 0.95);
         }
 
-        .chapter-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 15px; }
-        .chapter-card { background: var(--card); padding: 20px; border-radius: 12px; text-decoration: none; color: var(--text); border: 1px solid #222; transition: 0.3s; text-align: left; display: block; box-shadow: 0 4px 15px rgba(0,0,0,0.5); }
-        .chapter-card:hover { border-color: var(--accent); transform: translateY(-3px); box-shadow: 0 8px 20px rgba(0,0,0,0.6); }
-        .chapter-card span { font-size: 0.7rem; color: var(--accent); font-weight: bold; }
-        .chapter-card strong { display: block; margin-top: 5px; font-size: 1.05rem; }
+        .view-count { position: absolute; top: 15px; right: 20px; font-size: 0.8rem; color: var(--accent); font-weight: bold; }
+        .chapter-card span { color: var(--accent); font-size: 0.75rem; font-weight: 800; text-transform: uppercase; }
+
+        /* UI ELEMENTS */
+        .menu-btn { position: fixed; top: 20px; left: 20px; font-size: 24px; background: var(--card); color: var(--accent); border: 1px solid #333; padding: 12px 16px; border-radius: 12px; cursor: pointer; z-index: 2000; }
+        .sidebar { position: fixed; top: 0; left: -300px; width: 280px; height: 100%; background: #0f1218; z-index: 2001; transition: 0.4s; padding: 80px 20px; border-right: 1px solid #222; }
+        .sidebar.active { left: 0; }
+        .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.8); display: none; z-index: 1500; backdrop-filter: blur(5px); }
+        .overlay.active { display: block; }
+
+        .modal { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #11141a; width: 90%; max-width: 400px; padding: 30px; border-radius: 25px; border: 1px solid #333; z-index: 3000; display: none; }
+        .modal.active { display: block; }
+        
+        /* PROFILE */
+        .avatar-img { width: 80px; height: 80px; border-radius: 50%; object-fit: cover; border: 3px solid var(--accent); margin-bottom: 10px; }
+        .chat-avatar { width: 32px; height: 32px; border-radius: 50%; object-fit: cover; vertical-align: middle; margin-right: 10px; border: 1px solid var(--accent); }
+        .file-label { display: block; padding: 12px; background: #1a1e26; border: 1px dashed var(--accent); border-radius: 12px; cursor: pointer; color: var(--accent); font-size: 0.85rem; margin-bottom: 15px; text-align: center; }
+        #p-file { display: none; }
+
+        /* CHAT */
+        .chat-panel { position: fixed; top: 0; right: -350px; width: 320px; height: 100%; background: #0f1218; z-index: 2002; transition: 0.4s; display: flex; flex-direction: column; border-left: 1px solid #222; }
+        .chat-panel.active { right: 0; }
+        .chat-msgs { flex: 1; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; }
+        .msg { background: rgba(255,255,255,0.03); padding: 12px; border-radius: 15px; border: 1px solid rgba(255,255,255,0.05); }
+
+        .input-dark { width: 100%; padding: 12px; background: #05070a; border: 1px solid #222; color: #fff; border-radius: 12px; margin-bottom: 15px; outline: none; }
+        .btn-main { width: 100%; padding: 14px; background: var(--accent); color: #fff; border-radius: 12px; font-weight: bold; border: none; cursor: pointer; }
     </style>
 </head>
-
 <body>
-    <section class="hero">
-        <div class="hero__media">
-            <img src="tumblr.jpg" alt="Kapak Görseli" onerror="this.src='https://images6.alphacoders.com/131/1318055.png'">
-        </div>
 
+    <div class="main-bg"></div>
+    <button class="menu-btn" onclick="toggleSidebar()">☰</button>
+    <div id="overlay" class="overlay" onclick="closeAll()"></div>
+
+    <section class="hero">
         <div class="hero__content">
             <h1>HER ŞEYİ BİLEN OKUYUCUNUN BAKIŞ AÇISI</h1>
-            <div id="ai-log">Yükleniyor...</div>
-            
-            <div class="search-wrapper">
-                <input type="text" id="search-box" placeholder="Bölüm Ara..." onkeyup="filterChapters()">
-            </div>
+            <div id="ai-log">[Sistem]: Güncel bölümler yüklendi.</div>
+            <input type="text" id="search-box" placeholder="Bölüm ara..." onkeyup="filterChapters()">
         </div>
     </section>
 
@@ -114,62 +131,192 @@
         <div id="chapter-list" class="chapter-grid"></div>
     </div>
 
-    <button class="menu-btn" onclick="toggleMenu()">☰</button>
-    <div id="overlay" class="overlay" onclick="toggleMenu()"></div>
     <div id="sidebar" class="sidebar">
-        <h3 style="color:var(--accent); margin-bottom:20px; font-size: 1.2rem;">MENÜ</h3>
-        <div class="menu-item" onclick="bakim()">👤 Profil</div>
-        <div class="menu-item" onclick="bakim()">⭐ Favoriler</div>
-        <div class="menu-item" onclick="bakim()">⚙️ Ayarlar</div>
-        <div class="menu-item" onclick="bakim()">💬 Topluluk</div>
+        <div id="user-info-area" style="text-align: center; margin-bottom: 30px;"></div>
+        <div onclick="openProfile()" style="cursor:pointer; padding:15px 0; border-bottom:1px solid #222;">👤 Profil & Biyografi</div>
+        <div onclick="openChat('global')" style="cursor:pointer; padding:15px 0; border-bottom:1px solid #222;">💬 Global Sohbet</div>
+        <div style="margin-top:20px;">
+            <p style="font-size: 0.7rem; color: #555; margin-bottom:10px;">ARKADAŞLAR</p>
+            <div id="sidebar-friends"></div>
+        </div>
+        <div onclick="logout()" style="color:var(--danger); cursor:pointer; margin-top:50px; font-weight:bold;">🚪 Çıkış Yap</div>
+    </div>
+
+    <div id="profile-modal" class="modal">
+        <h3 style="margin-bottom:20px; color:var(--accent); text-align:center;">Profil Düzenle</h3>
+        <label class="file-label" for="p-file">📷 Profil Fotoğrafı Seç</label>
+        <input type="file" id="p-file" accept="image/*" onchange="previewFile()">
+        <div id="p-preview-wrap" style="text-align:center; margin-bottom:15px; display:none;">
+            <img id="p-preview" src="" style="width:60px; height:60px; border-radius:50%; object-fit:cover; border:2px solid var(--accent);">
+        </div>
+        <textarea id="p-bio" class="input-dark" rows="3" placeholder="Kendinden bahset..."></textarea>
+        <button class="btn-main" onclick="saveProfile()">Kaydet</button>
+        <button class="btn-main" style="background:#222; margin-top:10px;" onclick="closeAll()">Kapat</button>
+    </div>
+
+    <div id="auth-modal" class="modal">
+        <h2 id="auth-title" style="text-align:center; color:var(--accent); margin-bottom:25px;">Giriş Yap</h2>
+        <input type="text" id="auth-user" class="input-dark" placeholder="Kullanıcı Adı">
+        <input type="password" id="auth-pass" class="input-dark" placeholder="Şifre">
+        <button class="btn-main" onclick="handleAuth()">Devam Et</button>
+        <button class="btn-main" style="background:#222; margin-top:10px;" onclick="loginAsGuest()">Misafir Girişi</button>
+        <p onclick="toggleAuthMode()" id="auth-toggle-btn" style="text-align:center; font-size:0.8rem; cursor:pointer; color:#777; margin-top:15px;">Hesabın yok mu? <b>Kayıt Ol</b></p>
+    </div>
+
+    <div id="chat-panel" class="chat-panel">
+        <div style="padding:20px; background:#0d1015; border-bottom:1px solid #222; font-weight:bold; display:flex; justify-content:space-between;">
+            <span id="chat-title">Global Sohbet</span>
+            <span onclick="closeAll()" style="cursor:pointer;">✕</span>
+        </div>
+        <div id="chat-msgs" class="chat-msgs"></div>
+        <div style="padding:15px; border-top:1px solid #222;">
+            <input type="text" id="chat-input" class="input-dark" placeholder="Mesaj yaz..." onkeypress="if(event.key=='Enter')sendMsg()">
+        </div>
     </div>
 
     <script>
-        function toggleMenu() {
-            document.getElementById('sidebar').classList.toggle('active');
-            document.getElementById('overlay').classList.toggle('active');
-        }
-        function bakim() { alert("Bu özellik şu an bakımda!"); }
-
-        let allChapters = []; // Filtreleme için veriyi burada saklayacağız
+        let chapters = [];
+        let currentUser = null;
+        let tempBase64 = null;
+        const defaultAvatar = "https://cdn-icons-png.flaticon.com/512/149/149071.png";
 
         async function init() {
-            const log = document.getElementById('ai-log');
             try {
-                const res = await fetch('bolumler.json?v=' + Date.now());
-                if(!res.ok) throw "Hata";
-                const names = await res.json();
-                const keys = Object.keys(names).map(Number).sort((a,b) => a-b);
-                
-                // Veriyi hazırla
-                allChapters = keys.map(num => ({ id: num, title: names[num] }));
-                
-                // İlk listelemeyi yap
-                renderChapters(allChapters);
-                
-                log.innerText = `[Sistem]: ${keys.length} bölüm başarıyla yüklendi.`;
-            } catch (err) {
-                log.innerText = "[Hata]: Bağlantı kurulamadı.";
-            }
+                const res = await fetch('bolumler.json');
+                const data = await res.json();
+                chapters = Object.keys(data).map(k => ({ id: k, title: data[k] }));
+                renderChapters(chapters);
+            } catch(e) { console.error("Bölümler yüklenemedi."); }
+
+            const session = localStorage.getItem('orv_session');
+            if(session) {
+                currentUser = session === 'guest' ? 'guest' : JSON.parse(localStorage.getItem('orv_user_' + session));
+                updateUI();
+            } else { openAuth(); }
         }
 
-        function renderChapters(chapters) {
-            const list = document.getElementById('chapter-list');
-            list.innerHTML = chapters.map(ch => `
-                <a href="oku.html?b=${ch.id}" class="chapter-card">
-                    <span>BÖLÜM ${ch.id}</span>
-                    <strong>${ch.title}</strong>
-                </a>
+        function renderChapters(chs) {
+            const views = JSON.parse(localStorage.getItem('orv_views') || "{}");
+            document.getElementById('chapter-list').innerHTML = chs.map(c => `
+                <div class="chapter-card" onclick="openChapter('${c.id}')">
+                    <div class="view-count">👁️ ${views[c.id] || 0}</div>
+                    <span>Bölüm ${c.id}</span>
+                    <div style="font-weight:bold; margin-top:10px;">${c.title}</div>
+                </div>
             `).join('');
         }
 
-        function filterChapters() {
-            const val = document.getElementById('search-box').value.toLowerCase();
-            const filtered = allChapters.filter(ch => 
-                ch.id.toString().includes(val) || ch.title.toLowerCase().includes(val)
-            );
-            renderChapters(filtered);
+        function openChapter(id) {
+            let uId = (currentUser && currentUser !== 'guest') ? currentUser.username : 'guest';
+            let views = JSON.parse(localStorage.getItem('orv_views') || "{}");
+            let hKey = 'h_' + uId;
+            let history = JSON.parse(localStorage.getItem(hKey) || "[]");
+            if(!history.includes(id)) {
+                views[id] = (views[id] || 0) + 1;
+                history.push(id);
+                localStorage.setItem('orv_views', JSON.stringify(views));
+                localStorage.setItem(hKey, JSON.stringify(history));
+            }
+            window.location.href = `oku.html?b=${id}`;
         }
+
+        function previewFile() {
+            const file = document.getElementById('p-file').files[0];
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                tempBase64 = reader.result;
+                document.getElementById('p-preview').src = tempBase64;
+                document.getElementById('p-preview-wrap').style.display = 'block';
+            };
+            if(file) reader.readAsDataURL(file);
+        }
+
+        function saveProfile() {
+            if(tempBase64) currentUser.avatar = tempBase64;
+            currentUser.bio = document.getElementById('p-bio').value;
+            localStorage.setItem('orv_user_' + currentUser.username, JSON.stringify(currentUser));
+            updateUI(); closeAll(); alert("Profil güncellendi.");
+        }
+
+        function openChat(target) {
+            closeAll();
+            document.getElementById('chat-title').innerText = target === 'global' ? 'Global Sohbet' : 'Özel: ' + target;
+            document.getElementById('chat-panel').classList.add('active');
+            document.getElementById('overlay').classList.add('active');
+            loadMsgs(target);
+        }
+
+        function loadMsgs(target) {
+            const key = target === 'global' ? 'm_g' : 'm_d_' + [currentUser.username, target].sort().join('_');
+            const msgs = JSON.parse(localStorage.getItem(key) || "[]");
+            document.getElementById('chat-msgs').innerHTML = msgs.map(m => `
+                <div class="msg">
+                    <img src="${m.a || defaultAvatar}" class="chat-avatar">
+                    <b onclick="userAction('${m.u}')" style="cursor:pointer;">${m.u}:</b> ${m.t}
+                </div>
+            `).join('');
+            const b = document.getElementById('chat-msgs'); b.scrollTop = b.scrollHeight;
+        }
+
+        function sendMsg() {
+            if(!currentUser || currentUser === 'guest') return alert("Giriş yapmalısın.");
+            const i = document.getElementById('chat-input'); if(!i.value.trim()) return;
+            const target = document.getElementById('chat-title').innerText.includes('Global') ? 'global' : document.getElementById('chat-title').innerText.split(': ')[1];
+            const key = target === 'global' ? 'm_g' : 'm_d_' + [currentUser.username, target].sort().join('_');
+            const msgs = JSON.parse(localStorage.getItem(key) || "[]");
+            msgs.push({ u: currentUser.username, t: i.value, a: currentUser.avatar });
+            localStorage.setItem(key, JSON.stringify(msgs.slice(-50)));
+            i.value = ""; loadMsgs(target);
+        }
+
+        function userAction(name) {
+            if(!currentUser || currentUser === 'guest' || name === currentUser.username) return;
+            if(confirm(name + " eklensin mi?")) {
+                if(!currentUser.friends) currentUser.friends = [];
+                if(!currentUser.friends.includes(name)) { currentUser.friends.push(name); localStorage.setItem('orv_user_'+currentUser.username, JSON.stringify(currentUser)); updateUI(); }
+            } else { openChat(name); }
+        }
+
+        function updateUI() {
+            const area = document.getElementById('user-info-area');
+            if(currentUser === 'guest') area.innerHTML = `<b>Misafir Okuyucu</b>`;
+            else {
+                area.innerHTML = `<img src="${currentUser.avatar || defaultAvatar}" class="avatar-img"><br><b>${currentUser.username}</b><br><small style="color:#555">${currentUser.bio || ''}</small>`;
+                document.getElementById('sidebar-friends').innerHTML = (currentUser.friends || []).map(f => `<div onclick="openChat('${f}')" style="padding:10px; background:#1a1e26; border-radius:10px; margin-top:8px; cursor:pointer;">👤 ${f}</div>`).join('') || '<small>Arkadaş yok.</small>';
+            }
+        }
+
+        function filterChapters() {
+            const v = document.getElementById('search-box').value.toLowerCase();
+            renderChapters(chapters.filter(c => c.id.includes(v) || c.title.toLowerCase().includes(v)));
+        }
+
+        function toggleSidebar() { document.getElementById('sidebar').classList.toggle('active'); document.getElementById('overlay').classList.toggle('active'); }
+        function openAuth() { document.getElementById('auth-modal').classList.add('active'); document.getElementById('overlay').classList.add('active'); }
+        function openProfile() { if(!currentUser || currentUser === 'guest') return openAuth(); document.getElementById('p-bio').value = currentUser.bio || ""; document.getElementById('profile-modal').classList.add('active'); document.getElementById('overlay').classList.add('active'); }
+        function closeAll() { document.querySelectorAll('.modal, .sidebar, .chat-panel, .overlay').forEach(e => e.classList.remove('active')); }
+        function logout() { localStorage.removeItem('orv_session'); location.reload(); }
+
+        let authMode = 'login';
+        function toggleAuthMode() {
+            authMode = authMode === 'login' ? 'register' : 'login';
+            document.getElementById('auth-title').innerText = authMode === 'login' ? 'Giriş Yap' : 'Kayıt Ol';
+            document.getElementById('auth-toggle-btn').innerHTML = authMode === 'login' ? 'Hesabın yok mu? <b>Kayıt Ol</b>' : 'Hesabın var mı? <b>Giriş Yap</b>';
+        }
+        function handleAuth() {
+            const u = document.getElementById('auth-user').value.trim();
+            const p = document.getElementById('auth-pass').value.trim();
+            if(!u || !p) return;
+            if(authMode === 'register') {
+                localStorage.setItem('orv_user_'+u, JSON.stringify({username:u, password:p, avatar:defaultAvatar, bio:'', friends:[]}));
+                alert("Kayıt başarılı!"); toggleAuthMode();
+            } else {
+                const s = JSON.parse(localStorage.getItem('orv_user_'+u) || "{}");
+                if(s.password === p) { localStorage.setItem('orv_session', u); location.reload(); }
+                else alert("Hata!");
+            }
+        }
+        function loginAsGuest() { localStorage.setItem('orv_session', 'guest'); location.reload(); }
 
         init();
     </script>
