@@ -10,26 +10,26 @@
         
         body { 
             background-color: var(--bg); 
+            background-image: none !important;
             color: #fff; 
             font-family: 'Segoe UI', sans-serif; 
             min-height: 100vh;
         }
 
-        /* FULLSCREEN BACKGROUND */
         .main-bg {
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+            top: 0; left: 0; width: 100%; height: 100%;
             z-index: -1;
-            background: linear-gradient(to bottom, rgba(11, 14, 20, 0.3), rgba(11, 14, 20, 1)), url('tumblr.jpg');
-            background-size: cover;
-            background-position: center;
-            background-attachment: fixed;
+            background-repeat: no-repeat !important;
+            background-size: cover !important;
+            background-position: center !important;
+            background-attachment: fixed !important;
+            transition: background 0.8s ease-in-out; 
         }
 
-        /* CONTENT LAYOUT */
+        .bg-main { background-image: linear-gradient(to bottom, rgba(11, 14, 20, 0.3), rgba(11, 14, 20, 1)), url('tumblr.jpg') !important; }
+        .bg-side { background-image: linear-gradient(to bottom, rgba(11, 14, 20, 0.3), rgba(11, 14, 20, 1)), url('side_story_bg.jpg') !important; }
+
         .hero { 
             height: 85vh; 
             display: flex; 
@@ -64,259 +64,108 @@
             transition: 0.3s;
         }
 
-        /* CHAPTER GRID */
+        .tab-container { display: flex; gap: 10px; margin-bottom: 20px; width: 100%; max-width: 400px; }
+        .tab-btn { flex: 1; padding: 12px; background: rgba(0,0,0,0.5); border: 1px solid rgba(52, 152, 219, 0.3); color: #fff; border-radius: 15px; cursor: pointer; font-weight: bold; transition: 0.3s; }
+        .tab-btn.active { background: var(--accent); border-color: var(--accent); box-shadow: 0 0 15px var(--accent); }
+
         .container { max-width: 1200px; margin: -50px auto 100px; padding: 0 20px; }
         .chapter-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 25px; }
         
-        .chapter-card { 
-            background: var(--card); 
-            padding: 30px; 
-            border-radius: 20px; 
-            border: 1px solid rgba(255,255,255,0.05); 
-            cursor: pointer; 
-            position: relative; 
-            transition: 0.4s; 
-            backdrop-filter: blur(15px);
-        }
-        .chapter-card:hover { 
-            border-color: var(--accent); 
-            transform: translateY(-8px); 
-            background: rgba(21, 25, 33, 0.95);
-        }
+        .chapter-card { background: var(--card); padding: 30px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.05); cursor: pointer; position: relative; transition: 0.4s; backdrop-filter: blur(15px); }
+        .chapter-card:hover { border-color: var(--accent); transform: translateY(-8px); background: rgba(21, 25, 33, 0.95); }
+        
+        /* Okundu Görsel Efekti */
+        .chapter-card.read { border-color: var(--success) !important; opacity: 0.7; }
+        .chapter-card.read::after { content: '✓ OKUNDU'; position: absolute; bottom: 10px; right: 20px; font-size: 0.7rem; color: var(--success); font-weight: 800; }
 
         .view-count { position: absolute; top: 15px; right: 20px; font-size: 0.8rem; color: var(--accent); font-weight: bold; }
         .chapter-card span { color: var(--accent); font-size: 0.75rem; font-weight: 800; text-transform: uppercase; }
-
-        /* UI ELEMENTS */
-        .menu-btn { position: fixed; top: 20px; left: 20px; font-size: 24px; background: var(--card); color: var(--accent); border: 1px solid #333; padding: 12px 16px; border-radius: 12px; cursor: pointer; z-index: 2000; }
-        .sidebar { position: fixed; top: 0; left: -300px; width: 280px; height: 100%; background: #0f1218; z-index: 2001; transition: 0.4s; padding: 80px 20px; border-right: 1px solid #222; }
-        .sidebar.active { left: 0; }
-        .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.8); display: none; z-index: 1500; backdrop-filter: blur(5px); }
-        .overlay.active { display: block; }
-
-        .modal { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #11141a; width: 90%; max-width: 400px; padding: 30px; border-radius: 25px; border: 1px solid #333; z-index: 3000; display: none; }
-        .modal.active { display: block; }
-        
-        /* PROFILE */
-        .avatar-img { width: 80px; height: 80px; border-radius: 50%; object-fit: cover; border: 3px solid var(--accent); margin-bottom: 10px; }
-        .chat-avatar { width: 32px; height: 32px; border-radius: 50%; object-fit: cover; vertical-align: middle; margin-right: 10px; border: 1px solid var(--accent); }
-        .file-label { display: block; padding: 12px; background: #1a1e26; border: 1px dashed var(--accent); border-radius: 12px; cursor: pointer; color: var(--accent); font-size: 0.85rem; margin-bottom: 15px; text-align: center; }
-        #p-file { display: none; }
-
-        /* CHAT */
-        .chat-panel { position: fixed; top: 0; right: -350px; width: 320px; height: 100%; background: #0f1218; z-index: 2002; transition: 0.4s; display: flex; flex-direction: column; border-left: 1px solid #222; }
-        .chat-panel.active { right: 0; }
-        .chat-msgs { flex: 1; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; }
-        .msg { background: rgba(255,255,255,0.03); padding: 12px; border-radius: 15px; border: 1px solid rgba(255,255,255,0.05); }
-
-        .input-dark { width: 100%; padding: 12px; background: #05070a; border: 1px solid #222; color: #fff; border-radius: 12px; margin-bottom: 15px; outline: none; }
-        .btn-main { width: 100%; padding: 14px; background: var(--accent); color: #fff; border-radius: 12px; font-weight: bold; border: none; cursor: pointer; }
     </style>
 </head>
 <body>
-
-    <div class="main-bg"></div>
-    <button class="menu-btn" onclick="toggleSidebar()">☰</button>
-    <div id="overlay" class="overlay" onclick="closeAll()"></div>
-
+    <div id="dynamic-bg" class="main-bg bg-main"></div>
     <section class="hero">
         <div class="hero__content">
             <h1>HER ŞEYİ BİLEN OKUYUCUNUN BAKIŞ AÇISI</h1>
-            <div id="ai-log">[Sistem]: Güncel bölümler yüklendi.</div>
+            <div id="ai-log">[Sistem]: Veriler hazırlanıyor...</div>
+            <div class="tab-container">
+                <button onclick="switchCategory('main')" id="btn-main" class="tab-btn active">Ana Hikaye</button>
+                <button onclick="switchCategory('side')" id="btn-side" class="tab-btn">Side Story</button>
+            </div>
             <input type="text" id="search-box" placeholder="Bölüm ara..." onkeyup="filterChapters()">
         </div>
     </section>
-
     <div class="container">
         <div id="chapter-list" class="chapter-grid"></div>
     </div>
 
-    <div id="sidebar" class="sidebar">
-        <div id="user-info-area" style="text-align: center; margin-bottom: 30px;"></div>
-        <div onclick="openProfile()" style="cursor:pointer; padding:15px 0; border-bottom:1px solid #222;">👤 Profil & Biyografi</div>
-        <div onclick="openChat('global')" style="cursor:pointer; padding:15px 0; border-bottom:1px solid #222;">💬 Global Sohbet</div>
-        <div style="margin-top:20px;">
-            <p style="font-size: 0.7rem; color: #555; margin-bottom:10px;">ARKADAŞLAR</p>
-            <div id="sidebar-friends"></div>
-        </div>
-        <div onclick="logout()" style="color:var(--danger); cursor:pointer; margin-top:50px; font-weight:bold;">🚪 Çıkış Yap</div>
-    </div>
-
-    <div id="profile-modal" class="modal">
-        <h3 style="margin-bottom:20px; color:var(--accent); text-align:center;">Profil Düzenle</h3>
-        <label class="file-label" for="p-file">📷 Profil Fotoğrafı Seç</label>
-        <input type="file" id="p-file" accept="image/*" onchange="previewFile()">
-        <div id="p-preview-wrap" style="text-align:center; margin-bottom:15px; display:none;">
-            <img id="p-preview" src="" style="width:60px; height:60px; border-radius:50%; object-fit:cover; border:2px solid var(--accent);">
-        </div>
-        <textarea id="p-bio" class="input-dark" rows="3" placeholder="Kendinden bahset..."></textarea>
-        <button class="btn-main" onclick="saveProfile()">Kaydet</button>
-        <button class="btn-main" style="background:#222; margin-top:10px;" onclick="closeAll()">Kapat</button>
-    </div>
-
-    <div id="auth-modal" class="modal">
-        <h2 id="auth-title" style="text-align:center; color:var(--accent); margin-bottom:25px;">Giriş Yap</h2>
-        <input type="text" id="auth-user" class="input-dark" placeholder="Kullanıcı Adı">
-        <input type="password" id="auth-pass" class="input-dark" placeholder="Şifre">
-        <button class="btn-main" onclick="handleAuth()">Devam Et</button>
-        <button class="btn-main" style="background:#222; margin-top:10px;" onclick="loginAsGuest()">Misafir Girişi</button>
-        <p onclick="toggleAuthMode()" id="auth-toggle-btn" style="text-align:center; font-size:0.8rem; cursor:pointer; color:#777; margin-top:15px;">Hesabın yok mu? <b>Kayıt Ol</b></p>
-    </div>
-
-    <div id="chat-panel" class="chat-panel">
-        <div style="padding:20px; background:#0d1015; border-bottom:1px solid #222; font-weight:bold; display:flex; justify-content:space-between;">
-            <span id="chat-title">Global Sohbet</span>
-            <span onclick="closeAll()" style="cursor:pointer;">✕</span>
-        </div>
-        <div id="chat-msgs" class="chat-msgs"></div>
-        <div style="padding:15px; border-top:1px solid #222;">
-            <input type="text" id="chat-input" class="input-dark" placeholder="Mesaj yaz..." onkeypress="if(event.key=='Enter')sendMsg()">
-        </div>
-    </div>
-
     <script>
-        let chapters = [];
-        let currentUser = null;
-        let tempBase64 = null;
-        const defaultAvatar = "https://cdn-icons-png.flaticon.com/512/149/149071.png";
+        let mainChapters = [];
+        let sideChapters = [];
+        let currentCategory = 'main';
+        // Hafızadaki listeyi al
+        let readStatus = JSON.parse(localStorage.getItem('read_chapters')) || [];
 
         async function init() {
             try {
-                const res = await fetch('bolumler.json');
-                const data = await res.json();
-                chapters = Object.keys(data).map(k => ({ id: k, title: data[k] }));
-                renderChapters(chapters);
-            } catch(e) { console.error("Bölümler yüklenemedi."); }
+                const resMain = await fetch('bolumler.json?v=' + Date.now());
+                const dataMain = await resMain.json();
+                mainChapters = Object.keys(dataMain).map(k => ({ id: k, title: dataMain[k], type: 'main' }));
 
-            const session = localStorage.getItem('orv_session');
-            if(session) {
-                currentUser = session === 'guest' ? 'guest' : JSON.parse(localStorage.getItem('orv_user_' + session));
-                updateUI();
-            } else { openAuth(); }
+                const resSide = await fetch('yan_hikayeler.json?v=' + Date.now());
+                const dataSide = await resSide.json();
+                sideChapters = Object.keys(dataSide).map(k => ({ id: k, title: dataSide[k], type: 'side' }));
+
+                renderChapters(mainChapters);
+                document.getElementById('ai-log').innerText = "[Sistem]: Güncel bölümler yüklendi.";
+            } catch(e) { 
+                document.getElementById('ai-log').innerText = "[Hata]: Veriler çekilemedi.";
+            }
+        }
+
+        // Tıklandığında hem kaydet hem aç
+        function handleChapterClick(id, type) {
+            const chapterKey = `${type}-${id}`;
+            if (!readStatus.includes(chapterKey)) {
+                readStatus.push(chapterKey);
+                localStorage.setItem('read_chapters', JSON.stringify(readStatus));
+            }
+            location.href = `oku.html?b=${id}&t=${type}`;
         }
 
         function renderChapters(chs) {
-            const views = JSON.parse(localStorage.getItem('orv_views') || "{}");
-            document.getElementById('chapter-list').innerHTML = chs.map(c => `
-                <div class="chapter-card" onclick="openChapter('${c.id}')">
-                    <div class="view-count">👁️ ${views[c.id] || 0}</div>
-                    <span>Bölüm ${c.id}</span>
-                    <div style="font-weight:bold; margin-top:10px;">${c.title}</div>
-                </div>
-            `).join('');
+            const list = document.getElementById('chapter-list');
+            list.innerHTML = chs.map(c => {
+                const isRead = readStatus.includes(`${c.type}-${c.id}`);
+                return `
+                    <div class="chapter-card ${isRead ? 'read' : ''}" onclick="handleChapterClick('${c.id}', '${c.type}')">
+                        <div class="view-count">👁️ Oku</div>
+                        <span>${c.type === 'main' ? 'Bölüm' : 'Side Story'} ${c.id}</span>
+                        <div style="font-weight:bold; margin-top:10px;">${c.title}</div>
+                    </div>
+                `;
+            }).join('');
         }
 
-        function openChapter(id) {
-            let uId = (currentUser && currentUser !== 'guest') ? currentUser.username : 'guest';
-            let views = JSON.parse(localStorage.getItem('orv_views') || "{}");
-            let hKey = 'h_' + uId;
-            let history = JSON.parse(localStorage.getItem(hKey) || "[]");
-            if(!history.includes(id)) {
-                views[id] = (views[id] || 0) + 1;
-                history.push(id);
-                localStorage.setItem('orv_views', JSON.stringify(views));
-                localStorage.setItem(hKey, JSON.stringify(history));
-            }
-            window.location.href = `oku.html?b=${id}`;
-        }
-
-        function previewFile() {
-            const file = document.getElementById('p-file').files[0];
-            const reader = new FileReader();
-            reader.onloadend = () => {
-                tempBase64 = reader.result;
-                document.getElementById('p-preview').src = tempBase64;
-                document.getElementById('p-preview-wrap').style.display = 'block';
-            };
-            if(file) reader.readAsDataURL(file);
-        }
-
-        function saveProfile() {
-            if(tempBase64) currentUser.avatar = tempBase64;
-            currentUser.bio = document.getElementById('p-bio').value;
-            localStorage.setItem('orv_user_' + currentUser.username, JSON.stringify(currentUser));
-            updateUI(); closeAll(); alert("Profil güncellendi.");
-        }
-
-        function openChat(target) {
-            closeAll();
-            document.getElementById('chat-title').innerText = target === 'global' ? 'Global Sohbet' : 'Özel: ' + target;
-            document.getElementById('chat-panel').classList.add('active');
-            document.getElementById('overlay').classList.add('active');
-            loadMsgs(target);
-        }
-
-        function loadMsgs(target) {
-            const key = target === 'global' ? 'm_g' : 'm_d_' + [currentUser.username, target].sort().join('_');
-            const msgs = JSON.parse(localStorage.getItem(key) || "[]");
-            document.getElementById('chat-msgs').innerHTML = msgs.map(m => `
-                <div class="msg">
-                    <img src="${m.a || defaultAvatar}" class="chat-avatar">
-                    <b onclick="userAction('${m.u}')" style="cursor:pointer;">${m.u}:</b> ${m.t}
-                </div>
-            `).join('');
-            const b = document.getElementById('chat-msgs'); b.scrollTop = b.scrollHeight;
-        }
-
-        function sendMsg() {
-            if(!currentUser || currentUser === 'guest') return alert("Giriş yapmalısın.");
-            const i = document.getElementById('chat-input'); if(!i.value.trim()) return;
-            const target = document.getElementById('chat-title').innerText.includes('Global') ? 'global' : document.getElementById('chat-title').innerText.split(': ')[1];
-            const key = target === 'global' ? 'm_g' : 'm_d_' + [currentUser.username, target].sort().join('_');
-            const msgs = JSON.parse(localStorage.getItem(key) || "[]");
-            msgs.push({ u: currentUser.username, t: i.value, a: currentUser.avatar });
-            localStorage.setItem(key, JSON.stringify(msgs.slice(-50)));
-            i.value = ""; loadMsgs(target);
-        }
-
-        function userAction(name) {
-            if(!currentUser || currentUser === 'guest' || name === currentUser.username) return;
-            if(confirm(name + " eklensin mi?")) {
-                if(!currentUser.friends) currentUser.friends = [];
-                if(!currentUser.friends.includes(name)) { currentUser.friends.push(name); localStorage.setItem('orv_user_'+currentUser.username, JSON.stringify(currentUser)); updateUI(); }
-            } else { openChat(name); }
-        }
-
-        function updateUI() {
-            const area = document.getElementById('user-info-area');
-            if(currentUser === 'guest') area.innerHTML = `<b>Misafir Okuyucu</b>`;
-            else {
-                area.innerHTML = `<img src="${currentUser.avatar || defaultAvatar}" class="avatar-img"><br><b>${currentUser.username}</b><br><small style="color:#555">${currentUser.bio || ''}</small>`;
-                document.getElementById('sidebar-friends').innerHTML = (currentUser.friends || []).map(f => `<div onclick="openChat('${f}')" style="padding:10px; background:#1a1e26; border-radius:10px; margin-top:8px; cursor:pointer;">👤 ${f}</div>`).join('') || '<small>Arkadaş yok.</small>';
+        function switchCategory(cat) {
+            currentCategory = cat;
+            const bgDiv = document.getElementById('dynamic-bg');
+            document.getElementById('btn-main').classList.toggle('active', cat === 'main');
+            document.getElementById('btn-side').classList.toggle('active', cat === 'side');
+            if (cat === 'side') {
+                bgDiv.classList.replace('bg-main', 'bg-side');
+                renderChapters(sideChapters);
+            } else {
+                bgDiv.classList.replace('bg-side', 'bg-main');
+                renderChapters(mainChapters);
             }
         }
 
         function filterChapters() {
             const v = document.getElementById('search-box').value.toLowerCase();
-            renderChapters(chapters.filter(c => c.id.includes(v) || c.title.toLowerCase().includes(v)));
+            const list = currentCategory === 'main' ? mainChapters : sideChapters;
+            renderChapters(list.filter(c => c.id.toString().includes(v) || c.title.toLowerCase().includes(v)));
         }
-
-        function toggleSidebar() { document.getElementById('sidebar').classList.toggle('active'); document.getElementById('overlay').classList.toggle('active'); }
-        function openAuth() { document.getElementById('auth-modal').classList.add('active'); document.getElementById('overlay').classList.add('active'); }
-        function openProfile() { if(!currentUser || currentUser === 'guest') return openAuth(); document.getElementById('p-bio').value = currentUser.bio || ""; document.getElementById('profile-modal').classList.add('active'); document.getElementById('overlay').classList.add('active'); }
-        function closeAll() { document.querySelectorAll('.modal, .sidebar, .chat-panel, .overlay').forEach(e => e.classList.remove('active')); }
-        function logout() { localStorage.removeItem('orv_session'); location.reload(); }
-
-        let authMode = 'login';
-        function toggleAuthMode() {
-            authMode = authMode === 'login' ? 'register' : 'login';
-            document.getElementById('auth-title').innerText = authMode === 'login' ? 'Giriş Yap' : 'Kayıt Ol';
-            document.getElementById('auth-toggle-btn').innerHTML = authMode === 'login' ? 'Hesabın yok mu? <b>Kayıt Ol</b>' : 'Hesabın var mı? <b>Giriş Yap</b>';
-        }
-        function handleAuth() {
-            const u = document.getElementById('auth-user').value.trim();
-            const p = document.getElementById('auth-pass').value.trim();
-            if(!u || !p) return;
-            if(authMode === 'register') {
-                localStorage.setItem('orv_user_'+u, JSON.stringify({username:u, password:p, avatar:defaultAvatar, bio:'', friends:[]}));
-                alert("Kayıt başarılı!"); toggleAuthMode();
-            } else {
-                const s = JSON.parse(localStorage.getItem('orv_user_'+u) || "{}");
-                if(s.password === p) { localStorage.setItem('orv_session', u); location.reload(); }
-                else alert("Hata!");
-            }
-        }
-        function loginAsGuest() { localStorage.setItem('orv_session', 'guest'); location.reload(); }
 
         init();
     </script>

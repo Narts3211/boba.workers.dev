@@ -38,37 +38,46 @@
 
     <script>
         const urlParams = new URLSearchParams(window.location.search);
-        const b = parseInt(urlParams.get('b')) || 1;
+        const b = urlParams.get('b') || "1";
+        const type = urlParams.get('t') || "main"; // 'main' veya 'side'
 
         async function load() {
             const titleEl = document.getElementById('title');
             const contentEl = document.getElementById('content');
 
+            // Kategoriye göre hangi JSON ve hangi klasör kullanılacak?
+            const jsonFile = (type === 'side') ? 'yan_hikayeler.json' : 'bolumler.json';
+            const folder = (type === 'side') ? 'side_stories' : 'bolumler';
+
             try {
-                // Bölüm listesini çek
-                const nRes = await fetch('bolumler.json?v=' + Date.now());
+                // 1. İsimleri çek
+                const nRes = await fetch(jsonFile + '?v=' + Date.now());
                 const names = await nRes.json();
-                titleEl.innerText = names[b] || "Bölüm " + b;
+                titleEl.innerText = names[b] || (type === 'side' ? "Side Story " : "Bölüm ") + b;
                 
-                // Metni çek
-                const cRes = await fetch(`bolumler/${b}.txt?v=` + Date.now());
-                if(!cRes.ok) throw new Error("Bölüm içeriği henüz eklenmemiş.");
+                // 2. Metni çek (.txt dosyası)
+                const cRes = await fetch(`${folder}/${b}.txt?v=` + Date.now());
+                if(!cRes.ok) throw new Error("İçerik henüz eklenmemiş.");
                 contentEl.innerText = await cRes.text();
 
-                // Navigasyon
-                const keys = Object.keys(names).map(Number).sort((x,y) => x-y);
+                // 3. Navigasyon Ayarları
+                const keys = Object.keys(names);
                 const idx = keys.indexOf(b);
 
                 if(idx > 0) {
                     const p = document.getElementById('prev');
-                    p.href = `oku.html?b=${keys[idx-1]}`;
+                    p.href = `oku.html?b=${keys[idx-1]}&t=${type}`;
                     p.classList.remove('hidden');
                 }
                 if(idx < keys.length - 1) {
                     const n = document.getElementById('next');
-                    n.href = `oku.html?b=${keys[idx+1]}`;
+                    n.href = `oku.html?b=${keys[idx+1]}&t=${type}`;
                     n.classList.remove('hidden');
                 }
+
+                // Sayfa başına kaydır
+                window.scrollTo(0, 0);
+
             } catch (e) {
                 titleEl.innerText = "Hata";
                 contentEl.innerText = e.message;
